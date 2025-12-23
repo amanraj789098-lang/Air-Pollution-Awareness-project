@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Vayu Pradushan Awareness | Aman</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- AOS Scroll Animation -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+<style>
+body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:#fff;
+    overflow-x:hidden;
+}
+.container{
+    max-width:900px;
+    margin:auto;
+    padding:15px;
+    position:relative;
+    z-index:1;
+}
+.card{
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(12px);
+    border-radius:20px;
+    padding:25px;
+    margin-bottom:25px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.5);
+}
+h1,h2{
+    text-align:center;
+    color:#7CFFB2;
+}
+input{
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    border:none;
+    margin-top:10px;
+}
+button{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border:none;
+    border-radius:10px;
+    background:linear-gradient(90deg,#00c6ff,#0072ff);
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+}
+button:hover{transform:scale(1.03);}
+
+.aqi-box{
+    text-align:center;
+    padding:25px;
+    border-radius:20px;
+    font-size:22px;
+    font-weight:bold;
+}
+.good{background:#2ecc71;}
+.moderate{background:#f1c40f;color:#000;}
+.unhealthy{background:#e67e22;}
+.veryunhealthy{background:#e74c3c;}
+.hazardous{background:#8e44ad;}
+
+.menu{
+    background:rgba(0,0,0,0.4);
+    padding:20px;
+    text-align:center;
+    border-radius:20px;
+}
+.menu div{
+    padding:12px;
+    border-bottom:1px solid rgba(255,255,255,0.2);
+}
+
+/* TABLE */
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+th,td{
+    padding:10px;
+    border:1px solid rgba(255,255,255,0.2);
+    text-align:center;
+}
+
+.footer{
+    text-align:center;
+    padding:30px;
+    background:rgba(0,0,0,0.5);
+    border-radius:20px;
+    color:#7CFFB2;
+}
+
+/* 🌫️ SMOKE EFFECT */
+.smoke-container{
+    position:fixed;
+    top:0;left:0;
+    width:100%;height:100%;
+    z-index:0;
+    overflow:hidden;
+}
+.smoke-container span{
+    position:absolute;
+    bottom:-200px;
+    width:200px;height:200px;
+    background:rgba(255,255,255,0.08);
+    border-radius:50%;
+    animation:smoke 25s linear infinite;
+}
+.smoke-container span:nth-child(1){left:10%;}
+.smoke-container span:nth-child(2){left:30%;animation-duration:30s;}
+.smoke-container span:nth-child(3){left:50%;animation-duration:22s;}
+.smoke-container span:nth-child(4){left:70%;animation-duration:35s;}
+.smoke-container span:nth-child(5){left:90%;animation-duration:28s;}
+
+@keyframes smoke{
+    0%{transform:translateY(0) scale(1);opacity:0;}
+    50%{opacity:0.4;}
+    100%{transform:translateY(-1200px) scale(2);opacity:0;}
+}
+</style>
+</head>
+
+<body>
+
+<!-- Smoke Background -->
+<div class="smoke-container">
+<span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<div class="container">
+
+<!-- HEADER -->
+<div class="card" data-aos="zoom-in">
+<h1>Vayu Pradushan Awareness 🌍</h1>
+<p style="text-align:center">Apne shehar ka LIVE AQI check karein</p>
+
+<input id="city" placeholder="Enter City (Delhi, Mumbai, Patna)">
+<button onclick="checkAQI()">Check Live AQI</button>
+
+<br><br>
+<div id="aqiBox" class="aqi-box moderate">
+AQI data yahan dikhega
+</div>
+</div>
+
+<!-- MENU -->
+<div class="menu card" data-aos="fade-up">
+<div>PRASATAVANA</div>
+<div>POLLUTION THEORY</div>
+<div>AWARENESS</div>
+<div>SOLUTIONS</div>
+<div>LIVE AQI</div>
+</div>
+
+<!-- INFO -->
+<div class="card" data-aos="fade-right">
+<p>
+Bharat ke kai shehron me hawa ki quality lagatar kharab hoti ja rahi hai.
+Is project ka uddeshya logon ko air pollution ke prati jagruk banana hai.
+</p>
+</div>
+
+<!-- MULTI CITY AQI -->
+<div class="card" data-aos="fade-up">
+<h2>📊 Multiple Cities Live AQI</h2>
+<button onclick="loadMultiAQI()">Refresh AQI List</button>
+
+<table>
+<thead>
+<tr>
+<th>City</th>
+<th>AQI</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody id="aqiTable">
+<tr><td colspan="3">Click Refresh to load data</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- FOOTER -->
+<div class="footer" data-aos="zoom-in">
+<p><b>Student Name:</b> Aman</p>
+<p><b>Class:</b> 9th-G | SBV Tughlakabad Village</p>
+<p>Mission: Clean Air 🌱 Green India 🇮🇳</p>
+</div>
+
+</div>
+
+<!-- AOS -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+AOS.init({duration:1200});
+</script>
+
+<!-- AQI LOGIC -->
+<script>
+const TOKEN = "0a1c12d807095eaca35a60c04140770e199440f3";
+
+async function checkAQI(){
+    let city = document.getElementById("city").value.trim();
+    if(city===""){ alert("City name likho"); return; }
+
+    let url = `https://api.waqi.info/feed/${city}/?token=${TOKEN}`;
+    let res = await fetch(url);
+    let data = await res.json();
+    let box = document.getElementById("aqiBox");
+
+    if(data.status!=="ok"){
+        box.className="aqi-box hazardous";
+        box.innerHTML="AQI data nahi mila ❌";
+        return;
+    }
+
+    showAQI(box,data.data.aqi);
+}
+
+function showAQI(box,aqi){
+    let cls="",status="";
+    if(aqi<=50){cls="good";status="Good 😊";}
+    else if(aqi<=100){cls="moderate";status="Moderate 😐";}
+    else if(aqi<=200){cls="unhealthy";status="Unhealthy ⚠️";}
+    else if(aqi<=300){cls="veryunhealthy";status="Very Unhealthy 🚫";}
+    else{cls="hazardous";status="Hazardous ☠️";}
+    box.className=`aqi-box ${cls}`;
+    box.innerHTML=`AQI: ${aqi}<br>${status}`;
+}
+
+const cities=["Delhi","Mumbai","Kolkata","Chennai","Bengaluru","Hyderabad","Patna","Lucknow"];
+
+async function loadMultiAQI(){
+    let table=document.getElementById("aqiTable");
+    table.innerHTML="";
+    for(let city of cities){
+        let url=`https://api.waqi.info/feed/${city}/?token=${TOKEN}`;
+        let res=await fetch(url);
+        let data=await res.json();
+        if(data.status!=="ok") continue;
+
+        let aqi=data.data.aqi;
+        let cls="",status="";
+        if(aqi<=50){cls="good";status="Good";}
+        else if(aqi<=100){cls="moderate";status="Moderate";}
+        else if(aqi<=200){cls="unhealthy";status="Unhealthy";}
+        else if(aqi<=300){cls="veryunhealthy";status="Very Unhealthy";}
+        else{cls="hazardous";status="Hazardous";}
+
+        table.innerHTML+=`
+        <tr class="${cls}">
+            <td>${city}</td>
+            <td>${aqi}</td>
+            <td>${status}</td>
+        </tr>`;
+    }
+}
+</script>
+
+</body>
+</html>
